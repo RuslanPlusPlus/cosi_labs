@@ -1,6 +1,5 @@
 package com.rusned.laba1.app;
 
-import com.rusned.laba1.view.App;
 import javafx.application.Application;
 import javafx.stage.Stage;
 

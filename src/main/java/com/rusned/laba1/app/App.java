@@ -1,4 +1,4 @@
-package com.rusned.laba1.view;
+package com.rusned.laba1.app;
 
 import com.rusned.laba1.util.AppFileNameFilter;
 import com.rusned.laba1.util.ImageManager;
@@ -64,7 +64,6 @@ public class App {
             stage.setFullScreen(true);
             stage.show();
 
-            //Platform.runLater(() -> resImageView[0].setImage(resImageView[1].getImage()));
         } catch (IOException e) {
             e.printStackTrace();
         }
