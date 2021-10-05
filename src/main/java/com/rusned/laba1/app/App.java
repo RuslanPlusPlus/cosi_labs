@@ -9,8 +9,6 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -19,8 +17,6 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,13 +26,17 @@ import java.util.Scanner;
 public class App {
 
     private static final String CURRENT_DIRECTORY = System.getProperty("user.dir");
+    private static final String[] BAR_CHART_TITLES = {
+            "Original image",
+            "Binary preparation",
+            "Luma slice preparation",
+            "Sobel filter"
+    };
     private static final Scanner in = new Scanner(System.in);
     private final ImageManager imageManager = new ImageManager();
     private final AppFileNameFilter fileNameFilter = new AppFileNameFilter(".jpg");
-
-    private static final ImageView[] resultImageView = new ImageView[3];
     private static final BufferedImage[] resultImage = new BufferedImage[4];
-    private static ImageView originalImageView;
+
 
     private static int OPERATION_COUNTER = 0;
     private static File imageFile;
@@ -48,15 +48,15 @@ public class App {
 
     private void createWindow() {
         try {
-            HBox hBoxOrig = new HBox(createHistogram(ImageIO.read(imageFile)));
+            HBox hBoxOrig = new HBox(createHistogram(ImageIO.read(imageFile), BAR_CHART_TITLES[0]));
             HBox[] hBoxesImage = new HBox[3];
             for (int i = 0; i < hBoxesImage.length; i++)
-                hBoxesImage[i] = new HBox(createHistogram(resultImage[i]));
+                hBoxesImage[i] = new HBox(createHistogram(resultImage[i], BAR_CHART_TITLES[i + 1]));
             VBox mainBox = new VBox(hBoxOrig, hBoxesImage[0], hBoxesImage[1], hBoxesImage[2]);
 
             ScrollPane scrollPane = new ScrollPane(mainBox);
 
-            Scene scene = new Scene(scrollPane, 1820, 920);
+            Scene scene = new Scene(scrollPane, 1200, 600);
 
             Stage stage = new Stage();
             stage.setScene(scene);
@@ -69,7 +69,7 @@ public class App {
         }
     }
 
-    private BarChart createHistogram(BufferedImage resImage) {
+    private BarChart createHistogram(BufferedImage resImage, String title) {
         WritableRaster raster = resImage.getRaster();
         int[] percent = new int[256];
         for (int i = 0; i < raster.getWidth(); i++) {
@@ -86,6 +86,7 @@ public class App {
         NumberAxis y = new NumberAxis();
         y.setLabel("Amount");
         BarChart barChart = new BarChart(x, y);
+        barChart.setTitle(title);
         XYChart.Series ds = new XYChart.Series();
         for (int i = 0; i < percent.length; i++) {
             ds.getData().add(new XYChart.Data(i + "", percent[i]));
@@ -130,14 +131,6 @@ public class App {
         imageManager.compute(resultImage[1], PreparationType.LUMA_SLICE, computationParam);
         imageManager.filter(resultImage[2], resultImage[3]);
 
-        try {
-            originalImageView = new ImageView(new Image(new FileInputStream(imageName)));
-            for (int i = 0; i < resultImageView.length; i++) {
-                resultImageView[i] = new ImageView(new Image(new FileInputStream(saveImage(resultImage[i]))));
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
     }
 
     private static boolean openImage() {
