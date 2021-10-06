@@ -98,7 +98,7 @@ public class App {
     private void menu() {
 
         int fileCounter = 1;
-        String imageName = null;
+        String imageName;
         Map<Integer, String> dialogMap = new HashMap<>();
         File imageDirectory = new File(CURRENT_DIRECTORY);
         File[] listFiles = imageDirectory.listFiles(fileNameFilter);
@@ -130,6 +130,10 @@ public class App {
         computationParam = in.nextInt();
         imageManager.compute(resultImage[1], PreparationType.LUMA_SLICE, computationParam);
         imageManager.filter(resultImage[2], resultImage[3]);
+
+        for (int i = 0; i < resultImage.length - 1; i++) {
+            saveImage(resultImage[i]);
+        }
 
     }
 
